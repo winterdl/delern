@@ -590,5 +590,26 @@
     "type": "text",
     "placeholders": {
     }
+  },
+  "imageFromGalleryLabel": "Из Галереи",
+  "@imageFromGalleryLabel": {
+    "description": "Upload image from Gallery",
+    "type": "text",
+    "placeholders": {
+    }
+  },
+  "imageFromPhotoLabel": "Сфотографировать",
+  "@imageFromPhotoLabel": {
+    "description": "Take phote to upload image",
+    "type": "text",
+    "placeholders": {
+    }
+  },
+  "accessibilityAddImageLabel": "Добавить картинку",
+  "@accessibilityAddImageLabel": {
+    "description": "Add Image Accessibility label",
+    "type": "text",
+    "placeholders": {
+    }
   }
 }

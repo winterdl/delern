@@ -591,5 +591,26 @@
     "type": "text",
     "placeholders": {
     }
+  },
+  "imageFromGalleryLabel": "From Gallery",
+  "@imageFromGalleryLabel": {
+    "description": "Upload image from Gallery",
+    "type": "text",
+    "placeholders": {
+    }
+  },
+  "imageFromPhotoLabel": "Take Photo",
+  "@imageFromPhotoLabel": {
+    "description": "Take photo to upload image",
+    "type": "text",
+    "placeholders": {
+    }
+  },
+  "accessibilityAddImageLabel": "Add Image",
+  "@accessibilityAddImageLabel": {
+    "description": "Add Image Accessibility label",
+    "type": "text",
+    "placeholders": {
+    }
   }
 }

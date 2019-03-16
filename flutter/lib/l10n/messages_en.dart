@@ -33,6 +33,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function>{
+        "accessibilityAddImageLabel":
+            MessageLookupByLibrary.simpleMessage("Add Image"),
         "accountExistUserWarning": MessageLookupByLibrary.simpleMessage(
             "You already have an account, please sign in with your credentials. All your data, that was created anonymously, will be lost. Would you like to continue?"),
         "add": MessageLookupByLibrary.simpleMessage("Add"),
@@ -92,6 +94,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "errorUserMessage": MessageLookupByLibrary.simpleMessage("Error: "),
         "frontSideHint": MessageLookupByLibrary.simpleMessage("Front side"),
         "germanDeckType": MessageLookupByLibrary.simpleMessage("German"),
+        "imageFromGalleryLabel":
+            MessageLookupByLibrary.simpleMessage("From Gallery"),
+        "imageFromPhotoLabel":
+            MessageLookupByLibrary.simpleMessage("Take Photo"),
         "installEmailApp":
             MessageLookupByLibrary.simpleMessage("Please install Email App"),
         "inviteToAppMessage": MessageLookupByLibrary.simpleMessage(
