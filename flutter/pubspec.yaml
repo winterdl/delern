@@ -21,6 +21,7 @@ dependencies:
     git:
       url: https://github.com/dotdoom/observable.git
       ref: list-observed-unobserved
+  image_picker: ^0.5.0
 
   firebase_auth: ^0.8.2
   firebase_analytics: ^2.0.3

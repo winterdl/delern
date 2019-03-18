@@ -2,14 +2,16 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string></string>
+	<key>NSCameraUsageDescription</key>
+	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>googlegmail</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
-	<!-- Set up TestFlight Compliance
-	https://stackoverflow.com/questions/35841117 -->
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>CFBundleDisplayName</key>
