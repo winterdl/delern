@@ -142,11 +142,13 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
           semanticLabel:
               AppLocalizations.of(context).accessibilityAddImageLabel,
         ),
-        // TODO(ksheremet): Display list of images
         onSelected: (source) async {
-          print(source);
           var file = await _openImage(source);
-          print('File path = $file');
+          if (file != null) {
+            setState(() {
+              _bloc.frontImagesList.add(file);
+            });
+          }
         },
         itemBuilder: (context) => _buildImageMenu(context)
             .entries
@@ -174,7 +176,7 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
   }
 
   Widget _buildUserInput() {
-    final widgetsList = <Widget>[
+    final frontWidgetsInput = <Widget>[
       // TODO(ksheremet): limit lines in TextField
       Row(
         children: <Widget>[
@@ -200,6 +202,10 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
           _buildImageMenuButton(),
         ],
       ),
+    ];
+
+    // TODO(ksheremet): Display picture for back side
+    final backWidgetsInput = <Widget>[
       TextField(
         key: const Key('backCardInput'),
         maxLines: null,
@@ -217,6 +223,44 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
         ),
       ),
     ];
+
+    final widgetsList = <Widget>[]..addAll(frontWidgetsInput);
+
+    // TODO(ksheremet): Refactor
+    if (_bloc.frontImagesList != null && _bloc.frontImagesList.isNotEmpty) {
+      for (var i = 0; i < _bloc.frontImagesList.length; i++) {
+        var imageFile = _bloc.frontImagesList[i];
+        widgetsList.add(
+          Padding(
+              padding: const EdgeInsets.all(16),
+              child: Stack(children: <Widget>[
+                Image.file(imageFile),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8, top: 8),
+                    child: DecoratedBox(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            // TODO(ksheremet): Consider to create animation
+                            setState(() {
+                              _bloc.frontImagesList.removeAt(i);
+                            });
+                          }),
+                    ),
+                  ),
+                ),
+              ])),
+        );
+      }
+    }
+
+    widgetsList.addAll(backWidgetsInput);
 
     // Add reversed card widget it it is adding cards
     if (_bloc.isAddOperation) {

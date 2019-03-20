@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:delern_flutter/models/base/transaction.dart';
 import 'package:delern_flutter/models/card_model.dart';
@@ -17,6 +18,7 @@ class CardCreateUpdateBloc extends ScreenBloc {
   CardModel _cardModel;
   final bool isAddOperation;
   bool _isOperationEnabled = true;
+  final List<File> frontImagesList = [];
 
   CardCreateUpdateBloc({@required cardModel})
       : assert(cardModel != null),
