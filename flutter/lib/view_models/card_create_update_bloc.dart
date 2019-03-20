@@ -19,6 +19,7 @@ class CardCreateUpdateBloc extends ScreenBloc {
   final bool isAddOperation;
   bool _isOperationEnabled = true;
   final List<File> frontImagesList = [];
+  final List<File> backImagesList = [];
 
   CardCreateUpdateBloc({@required cardModel})
       : assert(cardModel != null),
