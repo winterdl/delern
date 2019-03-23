@@ -24,7 +24,7 @@ void main() {
     final frontFinder = find.text(frontSide);
     final backFinder = find.text(backSide);
 
-    expect(frontFinder, findsOneWidget);
-    expect(backFinder, findsOneWidget);
+    expect(frontFinder, findsWidgets);
+    expect(backFinder, findsWidgets);
   });
 }
