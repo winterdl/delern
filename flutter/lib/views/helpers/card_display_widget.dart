@@ -73,8 +73,8 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget>
                   },
                   child: IndexedStack(
                     children: <Widget>[
-                      _buildCard(widget.backgroundColor, widget.front),
-                      _buildCard(widget.backgroundColor, widget.back)
+                      _buildCard(widget.backgroundColor),
+                      _buildCard(widget.backgroundColor)
                     ],
                     index: _controller.value < 0.5 ? 0 : 1,
                     alignment: Alignment.center,
@@ -84,7 +84,7 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget>
         ),
       );
 
-  Widget _buildCard(Color backgroundcolor, String text) => Padding(
+  Widget _buildCard(Color backgroundcolor) => Padding(
       padding: const EdgeInsets.only(top: 30.0, bottom: 30.0),
       child: Card(
         color: backgroundcolor,
@@ -105,14 +105,7 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget>
     ];
 
     if (widget.showBack) {
-      widgetList
-        ..add(const Padding(
-          padding: EdgeInsets.symmetric(vertical: 15.0),
-          child: Divider(
-            height: 1.0,
-          ),
-        ))
-        ..add(_sideText(widget.back, context));
+      widgetList = [_sideText(widget.back, context)];
     }
 
     return widgetList;
@@ -124,7 +117,7 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget>
     }
     return Text(
       text,
-      textAlign: TextAlign.center,
+      // textAlign: TextAlign.center,
       style: AppStyles.primaryText,
     );
   }
