@@ -127,7 +127,7 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
       );
 
   Map<_ImageMenuItemSource, Widget> _buildImageMenu(BuildContext context) {
-    var imageMenu = <_ImageMenuItemSource, Widget>{}
+    final imageMenu = <_ImageMenuItemSource, Widget>{}
       ..[_ImageMenuItemSource.gallery] = _buildImageMenuItem(
           Icons.add_photo_alternate,
           localizations.of(context).imageFromGalleryLabel)
@@ -144,7 +144,7 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
               AppLocalizations.of(context).accessibilityAddImageLabel,
         ),
         onSelected: (source) async {
-          var file = await _openImage(source);
+          final file = await _openImage(source);
           if (file != null) {
             setState(() {
               imageFiles.add(file);
@@ -177,14 +177,16 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
   }
 
   List<Widget> _buildImagesList(List<File> images) {
-    var widgetsList = <Widget>[];
+    final widgetsList = <Widget>[];
     for (var i = 0; i < images.length; i++) {
-      var imageFile = images[i];
+      final imageFile = images[i];
       widgetsList.add(
         Padding(
             padding: const EdgeInsets.all(16),
             child: Stack(children: <Widget>[
-              Image.file(imageFile),
+              Image.file(
+                imageFile,
+              ),
               Align(
                 alignment: Alignment.topRight,
                 child: Padding(

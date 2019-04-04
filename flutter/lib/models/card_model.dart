@@ -12,6 +12,8 @@ class CardModel implements Model {
   String front;
   String back;
   DateTime createdAt;
+  List<String> frontImages;
+  List<String> backImages;
 
   CardModel({@required this.deckKey}) : assert(deckKey != null);
 
