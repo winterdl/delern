@@ -12,8 +12,8 @@ class CardModel implements Model {
   String front;
   String back;
   DateTime createdAt;
-  List<String> frontImages;
-  List<String> backImages;
+  List<String> frontImagesUri = [];
+  List<String> backImagesUri = [];
 
   CardModel({@required this.deckKey}) : assert(deckKey != null);
 
@@ -39,6 +39,16 @@ class CardModel implements Model {
     createdAt = value['createdAt'] == null
         ? null
         : DateTime.fromMillisecondsSinceEpoch(value['createdAt']);
+    frontImagesUri = value[frontImagesUri];
+    backImagesUri = value[backImagesUri];
+  }
+
+  void addFrontImageUrl(String url) {
+    frontImagesUri.add(url);
+  }
+
+  void addBackImageUrl(String url) {
+    backImagesUri.add(url);
   }
 
   @override
@@ -50,6 +60,8 @@ class CardModel implements Model {
     final map = <String, dynamic>{
       '$path/front': front,
       '$path/back': back,
+      '$path/frontImagesUri': frontImagesUri.toList(),
+      '$path/backImagesUri': backImagesUri.toList(),
     };
     if (isNew) {
       // Important note: we ask server to fill in the timestamp, but we do not

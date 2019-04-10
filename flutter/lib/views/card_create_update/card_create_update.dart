@@ -11,6 +11,9 @@ import 'package:delern_flutter/views/helpers/sign_in_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+// Callback that called when image was selected
+typedef ImageSelected = void Function(File file);
+
 class CardCreateUpdate extends StatefulWidget {
   final CardModel card;
   final DeckModel deck;
@@ -136,7 +139,7 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
     return imageMenu;
   }
 
-  Widget _buildImageMenuButton(List<File> imageFiles) =>
+  Widget _buildImageMenuButton(ImageSelected fn) =>
       PopupMenuButton<_ImageMenuItemSource>(
         icon: Icon(
           Icons.attachment,
@@ -146,9 +149,7 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
         onSelected: (source) async {
           final file = await _openImage(source);
           if (file != null) {
-            setState(() {
-              imageFiles.add(file);
-            });
+            fn(file);
           }
         },
         itemBuilder: (context) => _buildImageMenu(context)
@@ -238,7 +239,12 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
                   hintText: AppLocalizations.of(context).frontSideHint),
             ),
           ),
-          _buildImageMenuButton(_bloc.frontImagesList),
+          _buildImageMenuButton((file) {
+            // TODO(ksheremet): Move to BLoC
+            setState(() {
+              _bloc.frontImagesFileList.add(file);
+            });
+          }),
         ],
       ),
     ];
@@ -264,21 +270,30 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
               ),
             ),
           ),
-          _buildImageMenuButton(_bloc.backImagesList),
+          _buildImageMenuButton((file) {
+            // TODO(ksheremet): Move to Bloc
+            setState(() {
+              _bloc.backImagesFileList.add(file);
+            });
+          }),
         ],
       ),
     ];
 
     final widgetsList = <Widget>[]..addAll(frontWidgetsInput);
 
-    if (_bloc.frontImagesList != null && _bloc.frontImagesList.isNotEmpty) {
-      widgetsList.addAll(_buildImagesList(_bloc.frontImagesList));
+    //Build front images
+    if (_bloc.frontImagesFileList != null &&
+        _bloc.frontImagesFileList.isNotEmpty) {
+      widgetsList.addAll(_buildImagesList(_bloc.frontImagesFileList));
     }
 
     widgetsList.addAll(backWidgetsInput);
 
-    if (_bloc.backImagesList != null && _bloc.backImagesList.isNotEmpty) {
-      widgetsList.addAll(_buildImagesList(_bloc.backImagesList));
+    // Build back images
+    if (_bloc.backImagesFileList != null &&
+        _bloc.backImagesFileList.isNotEmpty) {
+      widgetsList.addAll(_buildImagesList(_bloc.backImagesFileList));
     }
 
     // Add reversed card widget it it is adding cards

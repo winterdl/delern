@@ -7,8 +7,10 @@ import 'package:delern_flutter/models/scheduled_card_model.dart';
 import 'package:delern_flutter/remote/analytics.dart';
 import 'package:delern_flutter/remote/error_reporting.dart' as error_reporting;
 import 'package:delern_flutter/view_models/base/screen_bloc.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:meta/meta.dart';
 import 'package:pedantic/pedantic.dart';
+import 'package:uuid/uuid.dart';
 
 class CardCreateUpdateBloc extends ScreenBloc {
   String _frontText;
@@ -18,8 +20,8 @@ class CardCreateUpdateBloc extends ScreenBloc {
   CardModel _cardModel;
   final bool isAddOperation;
   bool _isOperationEnabled = true;
-  final List<File> frontImagesList = [];
-  final List<File> backImagesList = [];
+  final List<File> frontImagesFileList = [];
+  final List<File> backImagesFileList = [];
 
   CardCreateUpdateBloc({@required cardModel})
       : assert(cardModel != null),
@@ -57,6 +59,9 @@ class CardCreateUpdateBloc extends ScreenBloc {
   final _onDiscardChangesController = StreamController<void>();
   Sink<void> get onDiscardChanges => _onDiscardChangesController.sink;
 
+  final _onFrontImageAddedController = StreamController<File>();
+  Sink<File> get onFrontImageAdded = _onFront
+
   void _initFields() {
     _frontText = _cardModel.front ?? '';
     _backText = _cardModel.back ?? '';
@@ -82,11 +87,32 @@ class CardCreateUpdateBloc extends ScreenBloc {
     });
   }
 
-  Future<void> _saveCard() {
+  // TODO(ksheremet): Save image to Storage. If saving was unsuccessful, delete
+  // the image.
+  Future<void> _saveCard() async {
     logCardCreate(_cardModel.deckKey);
+    // TODO(ksheremet): Save file to FS and get link to save
+    if (frontImagesFileList.isNotEmpty) {
+      for (var i = 0; i < frontImagesFileList.length; i++) {
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('cards')
+            .child(_cardModel.deckKey)
+            .child(Uuid().v1());
+
+        // TODO(ksheremet): It takes a while. Consider to increase speed
+        final downloadUrl =
+            await storageRef.putFile(frontImagesFileList[i]).onComplete;
+
+        final String url = await downloadUrl.ref.getDownloadURL();
+        _cardModel.addFrontImageUrl(url);
+        print(_cardModel.toString());
+      }
+    }
     final t = Transaction()..save(_cardModel);
     final sCard = ScheduledCardModel(deckKey: _cardModel.deckKey, uid: uid)
       ..key = _cardModel.key;
+
     t.save(sCard);
 
     if (_addReversedCard) {
