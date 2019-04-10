@@ -14,26 +14,20 @@ void main() {
     await tester.pumpWidget(MaterialApp(
       home: CardDisplayWidget(
         front: frontSide,
-        backgroundColor: AppStyles.cardBackgroundColors[Gender.feminine],
-        isMarkdown: false,
-        showBack: true,
-      ),
-    ));
-
-    final frontFinder = find.widgetWithText(Widget, frontSide);
-    expect(frontFinder, findsWidgets);
-
-    await tester.tap(find.byType(GestureDetector));
-
-    await tester.pumpWidget(MaterialApp(
-      home: CardDisplayWidget(
         back: backSide,
         backgroundColor: AppStyles.cardBackgroundColors[Gender.feminine],
         isMarkdown: false,
         showBack: true,
       ),
     ));
-    final backFinder = find.widgetWithText(Widget, backSide);
+
+    final frontFinder = find.text(frontSide);
+    expect(frontFinder, findsWidgets);
+
+    await tester.tap(find.byType(AnimatedBuilder));
+
+    await tester.pumpAndSettle();
+    final backFinder = find.text(backSide);
     expect(backFinder, findsWidgets);
   });
 }

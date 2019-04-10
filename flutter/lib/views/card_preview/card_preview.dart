@@ -27,6 +27,7 @@ class CardPreview extends StatefulWidget {
 
 class _CardPreviewState extends State<CardPreview> {
   CardPreviewBloc _cardPreviewBloc;
+  bool backshown = false;
 
   @override
   void initState() {
@@ -84,6 +85,11 @@ class _CardPreviewState extends State<CardPreview> {
                         backgroundColor: specifyCardBackground(
                             snapshot.requireData.deck.type,
                             snapshot.requireData.card.back),
+                        onFlip: (f) => {
+                              setState(() {
+                                backshown = f;
+                              })
+                            },
                         isMarkdown: snapshot.requireData.deck.markdown))),
             const Padding(padding: EdgeInsets.only(bottom: 100.0))
           ],
