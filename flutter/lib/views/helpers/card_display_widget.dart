@@ -14,11 +14,11 @@ class CardDisplayWidget extends StatefulWidget {
   final onFlipCallback onFlip;
 
   const CardDisplayWidget(
-      {@required this.front,
-      @required this.back,
-      @required this.showBack,
-      @required this.backgroundColor,
-      @required this.isMarkdown,
+      {this.front,
+      this.back,
+      this.showBack,
+      this.backgroundColor,
+      this.isMarkdown,
       this.onFlip});
 
   @override
@@ -46,7 +46,7 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget>
     if (!mounted) {
       return;
     }
-    if (backshown) {
+    if (widget.showBack) {
       _controller.reverse();
       backshown = false;
     } else {
@@ -71,12 +71,8 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget>
                       widget.onFlip(backshown);
                     }
                   },
-                  child: IndexedStack(
-                    children: <Widget>[
-                      _buildCard(widget.backgroundColor),
-                      _buildCard(widget.backgroundColor)
-                    ],
-                    index: _controller.value < 0.5 ? 0 : 1,
+                  child: Stack(
+                    children: <Widget>[_buildCard(widget.backgroundColor)],
                     alignment: Alignment.center,
                   ),
                 ),
@@ -94,20 +90,17 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget>
           child: ListView(
             scrollDirection: Axis.vertical,
             padding: const EdgeInsets.all(20.0),
-            children: _buildCardBody(context),
+            children: <Widget>[
+              widget.showBack
+                  ? _buildCardBody(context, widget.back)
+                  : _buildCardBody(context, widget.front),
+            ],
           ),
         ),
       ));
 
-  List<Widget> _buildCardBody(BuildContext context) {
-    var widgetList = [
-      _sideText(widget.front, context),
-    ];
-
-    if (widget.showBack) {
-      widgetList = [_sideText(widget.back, context)];
-    }
-
+  Widget _buildCardBody(BuildContext context, String text) {
+    var widgetList = _sideText(text, context);
     return widgetList;
   }
 
@@ -117,7 +110,7 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget>
     }
     return Text(
       text,
-      // textAlign: TextAlign.center,
+      textAlign: TextAlign.center,
       style: AppStyles.primaryText,
     );
   }
