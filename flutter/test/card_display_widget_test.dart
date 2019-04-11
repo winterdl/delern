@@ -8,6 +8,7 @@ void main() {
   testWidgets('Display card', (tester) async {
     const frontSide = 'die Mutter';
     const backSide = 'mother';
+    var backshown = false;
 
     // Widget must be wrapped in MaterialApp widget because it uses material
     // related classes.
@@ -17,17 +18,19 @@ void main() {
         back: backSide,
         backgroundColor: AppStyles.cardBackgroundColors[Gender.feminine],
         isMarkdown: false,
+        onFlip: (back) => {backshown = back},
         showBack: true,
       ),
     ));
 
     final frontFinder = find.text(frontSide);
-    expect(frontFinder, findsWidgets);
+    expect(frontFinder, findsOneWidget);
+    if (backshown) {
+      await tester.tap(find.byType(Card));
 
-    await tester.tap(find.byType(AnimatedBuilder));
-
-    await tester.pumpAndSettle();
-    final backFinder = find.text(backSide);
-    expect(backFinder, findsWidgets);
+      await tester.pumpAndSettle();
+      final backFinder = find.text(backSide);
+      expect(backFinder, findsOneWidget);
+    }
   });
 }

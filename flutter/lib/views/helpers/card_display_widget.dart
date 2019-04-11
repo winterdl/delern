@@ -14,12 +14,12 @@ class CardDisplayWidget extends StatefulWidget {
   final onFlipCallback onFlip;
 
   const CardDisplayWidget(
-      {this.front,
-      this.back,
-      this.showBack,
-      this.backgroundColor,
-      this.isMarkdown,
-      this.onFlip});
+      {@required this.front,
+      @required this.back,
+      @required this.showBack,
+      @required this.backgroundColor,
+      @required this.isMarkdown,
+      @required this.onFlip});
 
   @override
   _CardDisplayWidgetState createState() => _CardDisplayWidgetState();
