@@ -91,7 +91,7 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget>
             scrollDirection: Axis.vertical,
             padding: const EdgeInsets.all(20.0),
             children: <Widget>[
-              backshown
+              widget.showBack
                   ? _buildCardBody(context, widget.back)
                   : _buildCardBody(context, widget.front),
             ],

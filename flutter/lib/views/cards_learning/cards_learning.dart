@@ -228,7 +228,6 @@ class CardsLearningState extends State<CardsLearning> {
       // For a new card we show, hide the back side.
       _isBackShown = false;
     });
-
     if (!_learnBeyondHorizon &&
         _viewModel.scheduledCard.repeatAt.isAfter(DateTime.now().toUtc())) {
       if (!_atLeastOneCardShown) {

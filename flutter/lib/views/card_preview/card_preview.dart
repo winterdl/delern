@@ -81,7 +81,7 @@ class _CardPreviewState extends State<CardPreview> {
                     builder: (context, snapshot) => CardDisplayWidget(
                         front: snapshot.requireData.card.front,
                         back: snapshot.requireData.card.back,
-                        showBack: true,
+                        showBack: backshown,
                         backgroundColor: specifyCardBackground(
                             snapshot.requireData.deck.type,
                             snapshot.requireData.card.back),

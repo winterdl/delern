@@ -14,20 +14,28 @@ void main() {
     // related classes.
     await tester.pumpWidget(MaterialApp(
       home: CardDisplayWidget(
-        front: frontSide,
-        back: backSide,
-        backgroundColor: AppStyles.cardBackgroundColors[Gender.feminine],
-        isMarkdown: false,
-        onFlip: (back) => {backshown = back},
-        showBack: true,
-      ),
+          front: frontSide,
+          back: backSide,
+          backgroundColor: AppStyles.cardBackgroundColors[Gender.feminine],
+          isMarkdown: false,
+          onFlip: (back) => {backshown = back},
+          showBack: backshown),
     ));
 
     final frontFinder = find.text(frontSide);
     expect(frontFinder, findsOneWidget);
+    await tester.tap(find.byType(Card));
+    backshown = true;
     if (backshown) {
-      await tester.tap(find.byType(Card));
-
+      await tester.pumpWidget(MaterialApp(
+        home: CardDisplayWidget(
+            front: frontSide,
+            back: backSide,
+            backgroundColor: AppStyles.cardBackgroundColors[Gender.feminine],
+            isMarkdown: false,
+            onFlip: (back) => {backshown = back},
+            showBack: backshown),
+      ));
       await tester.pumpAndSettle();
       final backFinder = find.text(backSide);
       expect(backFinder, findsOneWidget);
