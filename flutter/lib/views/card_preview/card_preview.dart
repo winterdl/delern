@@ -39,11 +39,13 @@ class _CardPreviewState extends State<CardPreview> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.green[800],
           title: Text(_cardPreviewBloc.deckNameValue),
           actions: <Widget>[
             Builder(
               builder: (context) => IconButton(
                   icon: const Icon(Icons.delete),
+                  tooltip: 'Delete',
                   onPressed: () async {
                     if (widget.allowEdit) {
                       var locale = AppLocalizations.of(context);
@@ -97,6 +99,8 @@ class _CardPreviewState extends State<CardPreview> {
         floatingActionButton: Builder(
           builder: (context) => FloatingActionButton(
               child: const Icon(Icons.edit),
+              backgroundColor: Colors.red[800],
+              tooltip: 'Edit',
               onPressed: () {
                 if (widget.allowEdit) {
                   Navigator.push(
