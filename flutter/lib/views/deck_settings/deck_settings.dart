@@ -86,7 +86,7 @@ class _DeckSettingsState extends State<DeckSettings> {
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 controller: _deckNameController,
-                style: TextStyle(color: Colors.black, fontSize: 24),
+                style: const TextStyle(color: Colors.black, fontSize: 24),
                 onChanged: (text) {
                   setState(() {
                     _deckName = text;
