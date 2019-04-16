@@ -61,14 +61,18 @@ class _DeckSettingsState extends State<DeckSettings> {
 
   @override
   Widget build(BuildContext context) => ScreenBlocView(
-        appBar: AppBar(title: Text(_deckName), actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () async {
-              _bloc.onDeleteDeckIntention.add(null);
-            },
-          ),
-        ]),
+        appBar: AppBar(
+            title: Text(_deckName),
+            backgroundColor: Colors.green[800],
+            actions: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.delete),
+                tooltip: 'Delete',
+                onPressed: () async {
+                  _bloc.onDeleteDeckIntention.add(null);
+                },
+              ),
+            ]),
         body: _buildBody(),
         bloc: _bloc,
       );
@@ -82,7 +86,7 @@ class _DeckSettingsState extends State<DeckSettings> {
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 controller: _deckNameController,
-                style: AppStyles.primaryText,
+                style: TextStyle(color: Colors.black, fontSize: 24),
                 onChanged: (text) {
                   setState(() {
                     _deckName = text;
