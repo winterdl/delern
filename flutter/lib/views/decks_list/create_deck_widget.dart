@@ -82,6 +82,7 @@ class _CreateDeckDialogState extends State<_CreateDeckDialog> {
     final deckNameTextField = TextField(
       autofocus: true,
       controller: _textController,
+      maxLines: 2,
       onChanged: (text) {
         setState(() {});
       },

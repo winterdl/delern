@@ -73,6 +73,7 @@ class SearchBarWidgetState extends State<SearchBarWidget> {
         IconButton(
           tooltip: 'Search',
           icon: actionIcon,
+          tooltip: 'Search',
           onPressed: () {
             setState(() {
               if (_isSearchMode) {
