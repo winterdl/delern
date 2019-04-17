@@ -14,6 +14,8 @@ class CreateDeckWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => FloatingActionButton(
         child: const Icon(Icons.add),
+        backgroundColor: Colors.red[800],
+        tooltip: 'Add',
         onPressed: () async {
           var newDeck = await showDialog<DeckModel>(
             context: context,

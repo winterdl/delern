@@ -77,6 +77,7 @@ class CardsLearningState extends State<CardsLearning> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.green[800],
         title: Text(_viewModel.deck.name),
         actions: _viewModel.card == null ? null : <Widget>[_buildPopupMenu()],
       ),
@@ -93,6 +94,11 @@ class CardsLearningState extends State<CardsLearning> {
                         backgroundColor: specifyCardBackground(
                             _viewModel.deck.type, _viewModel.card.back),
                         isMarkdown: _viewModel.deck.markdown,
+                        onFlip: (backshown) => {
+                              setState(() {
+                                _isBackShown = backshown;
+                              })
+                            },
                       )),
                       Padding(
                         padding: const EdgeInsets.only(top: 25.0, bottom: 20.0),
@@ -154,18 +160,7 @@ class CardsLearningState extends State<CardsLearning> {
             ],
           ));
     }
-
-    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      FloatingActionButton(
-          backgroundColor: Colors.orange,
-          heroTag: 'turn',
-          child: const Icon(Icons.cached),
-          onPressed: () {
-            setState(() {
-              _isBackShown = true;
-            });
-          })
-    ]);
+    return Container();
   }
 
   Future<void> _answerCard(bool answer, BuildContext context) async {
@@ -234,7 +229,6 @@ class CardsLearningState extends State<CardsLearning> {
       // For a new card we show, hide the back side.
       _isBackShown = false;
     });
-
     if (!_learnBeyondHorizon &&
         _viewModel.scheduledCard.repeatAt.isAfter(DateTime.now().toUtc())) {
       if (!_atLeastOneCardShown) {
