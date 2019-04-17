@@ -71,7 +71,6 @@ class SearchBarWidgetState extends State<SearchBarWidget> {
       backgroundColor: Colors.green[800],
       actions: <Widget>[
         IconButton(
-          tooltip: 'Search',
           icon: actionIcon,
           tooltip: 'Search',
           onPressed: () {
