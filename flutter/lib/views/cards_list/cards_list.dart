@@ -25,7 +25,6 @@ class CardsList extends StatefulWidget {
 
 class _CardsListState extends State<CardsList> {
   CardListViewModel _cardListViewModel;
-  bool searchClicked = false;
 
   void _searchTextChanged(String input) {
     if (input == null) {
@@ -46,24 +45,8 @@ class _CardsListState extends State<CardsList> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: searchClicked
-            ? SearchBarWidget(
-                title: widget.deck.name,
-                search: _searchTextChanged,
-              )
-            : AppBar(
-                backgroundColor: Colors.green[800],
-                actions: <Widget>[
-                  IconButton(
-                      icon: const Icon(Icons.search),
-                      onPressed: () {
-                        setState(() {
-                          searchClicked = true;
-                        });
-                      },
-                      tooltip: 'Search')
-                ],
-              ),
+        appBar: SearchBarWidget(
+            title: widget.deck.name, search: _searchTextChanged),
         body: ObservingGridWidget(
           maxCrossAxisExtent: 240.0,
           items: _cardListViewModel.list,
