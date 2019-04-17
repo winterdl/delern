@@ -63,6 +63,8 @@ class _CardsListState extends State<CardsList> {
 
   Builder buildAddCard() => Builder(
         builder: (context) => FloatingActionButton(
+              tooltip: 'Add',
+              backgroundColor: Colors.red[800],
               onPressed: () {
                 if (widget.allowEdit) {
                   Navigator.push(

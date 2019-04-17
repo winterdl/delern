@@ -199,7 +199,7 @@ class AppLocalizations {
 
   String get appNotInstalledSharingDeck => Intl.message(
         'This user hasn\'t installed Delern yet. Do you want to sent an '
-            'invite?',
+        'invite?',
         name: 'appNotInstalledSharingDeck',
         desc: 'The app hasn\'t installed by user with who deck was shared',
       );
@@ -382,7 +382,7 @@ To see the source code for this app, please visit the [Delern GitHub repo](https
 
   String continueLearningQuestion(String date) => Intl.message(
         'Next card to learn is suggested at $date. Would you like to continue '
-            'learning anyway?',
+        'learning anyway?',
         args: [date],
         name: 'continueLearningQuestion',
         desc: 'Question for the user to continue learning',
@@ -414,8 +414,8 @@ To see the source code for this app, please visit the [Delern GitHub repo](https
 
   String get splashScreenFeatures => Intl.message(
         'Data and progress are saved in the Cloud\n'
-            'Data and progress are synchronized across all your devices\n'
-            'Share cards with your friends and colleagues',
+        'Data and progress are synchronized across all your devices\n'
+        'Share cards with your friends and colleagues',
         name: 'splashScreenFeatures',
         desc: 'Data and progress are saved',
       );
@@ -434,25 +434,25 @@ To see the source code for this app, please visit the [Delern GitHub repo](https
 
   String get accountExistUserWarning => Intl.message(
         'You already have an account, please sign in with your credentials. '
-            'All your data, that was created anonymously, will be lost. '
-            'Would you like to continue?',
+        'All your data, that was created anonymously, will be lost. '
+        'Would you like to continue?',
         name: 'accountExistUserWarning',
         desc: 'User warning, account already exists',
       );
 
   String get deleteDeckOwnerAccessQuestion => Intl.message(
         'The deck, all cards and learning history will be removed.\n\n'
-            'If you have shared this deck with other users, it will also be '
-            'removed from all users it is shared with. Do you want to delete '
-            'deck?',
+        'If you have shared this deck with other users, it will also be '
+        'removed from all users it is shared with. Do you want to delete '
+        'deck?',
         name: 'deleteDeckOwnerAccessQuestion',
         desc: 'Delete deck question to owner of deck',
       );
 
   String get deleteDeckWriteReadAccessQuestion => Intl.message(
         'The deck will be removed from your account only, all cards and '
-            'learning history will remain with the owner and other users. '
-            'Do you want to delete deck?',
+        'learning history will remain with the owner and other users. '
+        'Do you want to delete deck?',
         name: 'deleteDeckWriteReadAccessQuestion',
         desc: 'Delete deck question to user with write access',
       );
