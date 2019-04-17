@@ -68,9 +68,11 @@ class SearchBarWidgetState extends State<SearchBarWidget> {
 
     return AppBar(
       title: appBarTitle,
+      backgroundColor: Colors.green[800],
       actions: <Widget>[
         IconButton(
           icon: actionIcon,
+          tooltip: 'Search',
           onPressed: () {
             setState(() {
               if (_isSearchMode) {
