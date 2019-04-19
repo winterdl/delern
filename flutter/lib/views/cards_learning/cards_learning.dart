@@ -77,6 +77,7 @@ class CardsLearningState extends State<CardsLearning> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.green[800],
         title: Text(_viewModel.deck.name),
         actions: _viewModel.card == null ? null : <Widget>[_buildPopupMenu()],
       ),
@@ -146,13 +147,15 @@ class CardsLearningState extends State<CardsLearning> {
               FloatingActionButton(
                 // heroTag - https://stackoverflow.com/questions/46509553/
                 heroTag: 'dontknow',
-                backgroundColor: Colors.red,
+                tooltip: "Don't Know",
+                backgroundColor: Colors.red[800],
                 child: const Icon(Icons.clear),
                 onPressed: cb(() => _answerCard(false, context)),
               ),
               FloatingActionButton(
                 heroTag: 'know',
-                backgroundColor: Colors.green,
+                tooltip: 'Know',
+                backgroundColor: Colors.green[800],
                 child: const Icon(Icons.check),
                 onPressed: cb(() => _answerCard(true, context)),
               ),
