@@ -30,16 +30,29 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget>
   Animation<double> _animation;
   AnimationController _controller;
   bool backshown = false;
+  String cardText;
+
+  String _returnCardText() => widget.front;
 
   @override
   void initState() {
     super.initState();
+    cardText = _returnCardText();
     _controller =
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
     _animation = TweenSequence([
       TweenSequenceItem(tween: Tween(begin: 0.0, end: -pi / 2), weight: 0.5),
       TweenSequenceItem(tween: Tween(begin: pi / 2, end: 0.0), weight: 0.5)
     ]).animate(_controller);
+  }
+
+  @override
+  void didUpdateWidget(CardDisplayWidget oldWidget) {
+    if (!(cardText == oldWidget.front)) {
+      _controller.reset();
+      cardText = oldWidget.front;
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   void _startAnimation() {
