@@ -45,7 +45,7 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget>
   @override
   void didUpdateWidget(CardDisplayWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.front != widget.front)) {
+    if (oldWidget.front != widget.front) {
       _controller.reset();
     }
   }
