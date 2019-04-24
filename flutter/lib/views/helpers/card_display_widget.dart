@@ -30,14 +30,10 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget>
   Animation<double> _animation;
   AnimationController _controller;
   bool backshown = false;
-  String cardText;
-
-  String _returnCardText() => widget.front;
 
   @override
   void initState() {
     super.initState();
-    cardText = _returnCardText();
     _controller =
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
     _animation = TweenSequence([
@@ -48,11 +44,10 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget>
 
   @override
   void didUpdateWidget(CardDisplayWidget oldWidget) {
-    if (!(cardText == oldWidget.front)) {
-      _controller.reset();
-      cardText = oldWidget.front;
-    }
     super.didUpdateWidget(oldWidget);
+    if (!(oldWidget.front == widget.front)) {
+      _controller.reset();
+    }
   }
 
   void _startAnimation() {
