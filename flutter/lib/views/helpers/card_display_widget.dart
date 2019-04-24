@@ -42,6 +42,14 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget>
     ]).animate(_controller);
   }
 
+  @override
+  void didUpdateWidget(CardDisplayWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.front != widget.front) {
+      _controller.reset();
+    }
+  }
+
   void _startAnimation() {
     if (!mounted) {
       return;
