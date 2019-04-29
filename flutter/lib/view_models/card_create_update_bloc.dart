@@ -20,8 +20,8 @@ class CardCreateUpdateBloc extends ScreenBloc {
   CardModel _cardModel;
   final bool isAddOperation;
   bool _isOperationEnabled = true;
-  final List<File> frontImagesFileList = [];
-  final List<File> backImagesFileList = [];
+  final List<File> _frontImagesFileList = [];
+  final List<File> _backImagesFileList = [];
 
   CardCreateUpdateBloc({@required cardModel})
       : assert(cardModel != null),
@@ -60,7 +60,17 @@ class CardCreateUpdateBloc extends ScreenBloc {
   Sink<void> get onDiscardChanges => _onDiscardChangesController.sink;
 
   final _onFrontImageAddedController = StreamController<File>();
-  Sink<File> get onFrontImageAdded = _onFront
+  Sink<File> get onFrontImageAdded => _onFrontImageAddedController.sink;
+
+  final _onBackImageAddedController = StreamController<File>();
+  Sink<File> get onBackImageAdded => _onBackImageAddedController.sink;
+
+  final _doFrontImageAddedController = StreamController<List<File>>();
+  Stream<List<File>> get doFrontImageAdded =>
+      _doFrontImageAddedController.stream;
+
+  final _doBackImageAddedController = StreamController<List<File>>();
+  Stream<List<File>> get doBackImageAdded => _doBackImageAddedController.stream;
 
   void _initFields() {
     _frontText = _cardModel.front ?? '';
@@ -85,6 +95,16 @@ class CardCreateUpdateBloc extends ScreenBloc {
     _onDiscardChangesController.stream.listen((_) {
       notifyPop();
     });
+    _onFrontImageAddedController.stream.listen((file) {
+      // TODO(ksheremet): Add image to Storage and save link to list
+      _frontImagesFileList.add(file);
+      _doFrontImageAddedController.add(_frontImagesFileList);
+    });
+    _onBackImageAddedController.stream.listen((file) {
+      // TODO(ksheremet): Add image to Storage and save link to list
+      _backImagesFileList.add(file);
+      _doBackImageAddedController.add(_backImagesFileList);
+    });
   }
 
   // TODO(ksheremet): Save image to Storage. If saving was unsuccessful, delete
@@ -92,8 +112,8 @@ class CardCreateUpdateBloc extends ScreenBloc {
   Future<void> _saveCard() async {
     logCardCreate(_cardModel.deckKey);
     // TODO(ksheremet): Save file to FS and get link to save
-    if (frontImagesFileList.isNotEmpty) {
-      for (var i = 0; i < frontImagesFileList.length; i++) {
+    if (_frontImagesFileList.isNotEmpty) {
+      for (var i = 0; i < _frontImagesFileList.length; i++) {
         final storageRef = FirebaseStorage.instance
             .ref()
             .child('cards')
@@ -102,7 +122,7 @@ class CardCreateUpdateBloc extends ScreenBloc {
 
         // TODO(ksheremet): It takes a while. Consider to increase speed
         final downloadUrl =
-            await storageRef.putFile(frontImagesFileList[i]).onComplete;
+            await storageRef.putFile(_frontImagesFileList[i]).onComplete;
 
         final String url = await downloadUrl.ref.getDownloadURL();
         _cardModel.addFrontImageUrl(url);
@@ -193,6 +213,10 @@ class CardCreateUpdateBloc extends ScreenBloc {
     _doShowConfirmationDialogController.close();
     _onUidController.close();
     _onDiscardChangesController.close();
+    _onFrontImageAddedController.close();
+    _onBackImageAddedController.close();
+    _doFrontImageAddedController.close();
+    _doBackImageAddedController.close();
     super.dispose();
   }
 }

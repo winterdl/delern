@@ -177,7 +177,7 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
     return image;
   }
 
-  List<Widget> _buildImagesList(List<File> images) {
+  Widget _buildImagesList(List<File> images) {
     final widgetsList = <Widget>[];
     for (var i = 0; i < images.length; i++) {
       final imageFile = images[i];
@@ -202,6 +202,7 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
                         onPressed: () {
                           // TODO(ksheremet): Consider to create animation
                           setState(() {
+                            // TODO(ksheremet): Use bloc
                             images.removeAt(i);
                           });
                         }),
@@ -211,17 +212,17 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
             ])),
       );
     }
-    return widgetsList;
+    return Column(children: widgetsList);
   }
 
   // TODO(ksheremet): Refactor
   Widget _buildUserInput() {
     final frontWidgetsInput = <Widget>[
-      // TODO(ksheremet): limit lines in TextField
       Row(
         children: <Widget>[
           Expanded(
             child: TextField(
+              // TODO(ksheremet): limit lines in TextField
               key: const Key('frontCardInput'),
               autofocus: true,
               focusNode: _frontSideFocus,
@@ -240,10 +241,7 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
             ),
           ),
           _buildImageMenuButton((file) {
-            // TODO(ksheremet): Move to BLoC
-            setState(() {
-              _bloc.frontImagesFileList.add(file);
-            });
+            _bloc.onFrontImageAdded.add(file);
           }),
         ],
       ),
@@ -271,30 +269,39 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
             ),
           ),
           _buildImageMenuButton((file) {
-            // TODO(ksheremet): Move to Bloc
-            setState(() {
-              _bloc.backImagesFileList.add(file);
-            });
+            _bloc.onBackImageAdded.add(file);
           }),
         ],
       ),
     ];
 
-    final widgetsList = <Widget>[]..addAll(frontWidgetsInput);
-
-    //Build front images
-    if (_bloc.frontImagesFileList != null &&
-        _bloc.frontImagesFileList.isNotEmpty) {
-      widgetsList.addAll(_buildImagesList(_bloc.frontImagesFileList));
-    }
-
-    widgetsList.addAll(backWidgetsInput);
-
-    // Build back images
-    if (_bloc.backImagesFileList != null &&
-        _bloc.backImagesFileList.isNotEmpty) {
-      widgetsList.addAll(_buildImagesList(_bloc.backImagesFileList));
-    }
+    final widgetsList = <Widget>[]
+      ..addAll(frontWidgetsInput)
+      ..add(StreamBuilder<List<File>>(
+        stream: _bloc.doFrontImageAdded,
+        builder: (context, snapshot) {
+          if (snapshot.hasData &&
+              snapshot.data != null &&
+              snapshot.data.isNotEmpty) {
+            return _buildImagesList(snapshot.data);
+          } else {
+            return Container(height: 0, width: 0);
+          }
+        },
+      ))
+      ..addAll(backWidgetsInput)
+      ..add(StreamBuilder<List<File>>(
+        stream: _bloc.doBackImageAdded,
+        builder: (context, snapshot) {
+          if (snapshot.hasData &&
+              snapshot.data != null &&
+              snapshot.data.isNotEmpty) {
+            return _buildImagesList(snapshot.data);
+          } else {
+            return Container(height: 0, width: 0);
+          }
+        },
+      ));
 
     // Add reversed card widget it it is adding cards
     if (_bloc.isAddOperation) {
