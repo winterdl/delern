@@ -20,8 +20,9 @@ class CardCreateUpdateBloc extends ScreenBloc {
   CardModel _cardModel;
   final bool isAddOperation;
   bool _isOperationEnabled = true;
-  final List<File> _frontImagesFileList = [];
+  final List<String> _frontImagesFileList = [];
   final List<File> _backImagesFileList = [];
+  final storageRef = FirebaseStorage.instance.ref().child('cards');
 
   CardCreateUpdateBloc({@required cardModel})
       : assert(cardModel != null),
@@ -62,15 +63,22 @@ class CardCreateUpdateBloc extends ScreenBloc {
   final _onFrontImageAddedController = StreamController<File>();
   Sink<File> get onFrontImageAdded => _onFrontImageAddedController.sink;
 
+  final _onFrontImageDeletedController = StreamController<int>();
+  Sink<int> get onFrontImageDeleted => _onFrontImageDeletedController.sink;
+
   final _onBackImageAddedController = StreamController<File>();
   Sink<File> get onBackImageAdded => _onBackImageAddedController.sink;
 
-  final _doFrontImageAddedController = StreamController<List<File>>();
-  Stream<List<File>> get doFrontImageAdded =>
+  final _onBackImageDeletedController = StreamController<int>();
+  Sink<int> get onBackImageDeleted => _onBackImageDeletedController.sink;
+
+  final _doFrontImageAddedController = StreamController<List<String>>();
+  Stream<List<String>> get doFrontImageAdded =>
       _doFrontImageAddedController.stream;
 
-  final _doBackImageAddedController = StreamController<List<File>>();
-  Stream<List<File>> get doBackImageAdded => _doBackImageAddedController.stream;
+  final _doBackImageAddedController = StreamController<List<String>>();
+  Stream<List<String>> get doBackImageAdded =>
+      _doBackImageAddedController.stream;
 
   void _initFields() {
     _frontText = _cardModel.front ?? '';
@@ -95,15 +103,36 @@ class CardCreateUpdateBloc extends ScreenBloc {
     _onDiscardChangesController.stream.listen((_) {
       notifyPop();
     });
-    _onFrontImageAddedController.stream.listen((file) {
-      // TODO(ksheremet): Add image to Storage and save link to list
-      _frontImagesFileList.add(file);
+    _onFrontImageAddedController.stream.listen((file) async {
+      // Put file in Storage
+      final downloadUrl = await storageRef
+          .child(_cardModel.deckKey)
+          .child(Uuid().v1())
+          .putFile(file)
+          .onComplete;
+
+      // Get Url of image;
+      final String url = await downloadUrl.ref.getDownloadURL();
+      print('Uploaded url = $url');
+      _frontImagesFileList.add(url);
       _doFrontImageAddedController.add(_frontImagesFileList);
     });
     _onBackImageAddedController.stream.listen((file) {
       // TODO(ksheremet): Add image to Storage and save link to list
       _backImagesFileList.add(file);
-      _doBackImageAddedController.add(_backImagesFileList);
+      //_doBackImageAddedController.add(_backImagesFileList);
+    });
+    _onFrontImageDeletedController.stream.listen((index) async {
+      await (await FirebaseStorage.instance
+              .getReferenceFromUrl(_frontImagesFileList[index]))
+          .delete();
+      print('Image deleted');
+      _frontImagesFileList.removeAt(index);
+      _doFrontImageAddedController.add(_frontImagesFileList);
+    });
+    _onBackImageDeletedController.stream.listen((index) {
+      _backImagesFileList.removeAt(index);
+      // _doBackImageAddedController.add(_backImagesFileList);
     });
   }
 
@@ -111,24 +140,7 @@ class CardCreateUpdateBloc extends ScreenBloc {
   // the image.
   Future<void> _saveCard() async {
     logCardCreate(_cardModel.deckKey);
-    // TODO(ksheremet): Save file to FS and get link to save
-    if (_frontImagesFileList.isNotEmpty) {
-      for (var i = 0; i < _frontImagesFileList.length; i++) {
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('cards')
-            .child(_cardModel.deckKey)
-            .child(Uuid().v1());
-
-        // TODO(ksheremet): It takes a while. Consider to increase speed
-        final downloadUrl =
-            await storageRef.putFile(_frontImagesFileList[i]).onComplete;
-
-        final String url = await downloadUrl.ref.getDownloadURL();
-        _cardModel.addFrontImageUrl(url);
-        print(_cardModel.toString());
-      }
-    }
+    _cardModel.frontImagesUri = _frontImagesFileList;
     final t = Transaction()..save(_cardModel);
     final sCard = ScheduledCardModel(deckKey: _cardModel.deckKey, uid: uid)
       ..key = _cardModel.key;
@@ -217,6 +229,8 @@ class CardCreateUpdateBloc extends ScreenBloc {
     _onBackImageAddedController.close();
     _doFrontImageAddedController.close();
     _doBackImageAddedController.close();
+    _onFrontImageDeletedController.close();
+    _onBackImageDeletedController.close();
     super.dispose();
   }
 }

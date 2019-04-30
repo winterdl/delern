@@ -177,16 +177,16 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
     return image;
   }
 
-  Widget _buildImagesList(List<File> images) {
+  Widget _buildImagesList(List<String> images, Sink<int> onDelete) {
     final widgetsList = <Widget>[];
     for (var i = 0; i < images.length; i++) {
-      final imageFile = images[i];
+      final imageUrl = images[i];
       widgetsList.add(
         Padding(
             padding: const EdgeInsets.all(16),
             child: Stack(children: <Widget>[
-              Image.file(
-                imageFile,
+              Image.network(
+                imageUrl,
               ),
               Align(
                 alignment: Alignment.topRight,
@@ -200,11 +200,7 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
                     child: IconButton(
                         icon: const Icon(Icons.delete),
                         onPressed: () {
-                          // TODO(ksheremet): Consider to create animation
-                          setState(() {
-                            // TODO(ksheremet): Use bloc
-                            images.removeAt(i);
-                          });
+                          onDelete.add(i);
                         }),
                   ),
                 ),
@@ -277,26 +273,26 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
 
     final widgetsList = <Widget>[]
       ..addAll(frontWidgetsInput)
-      ..add(StreamBuilder<List<File>>(
+      ..add(StreamBuilder<List<String>>(
         stream: _bloc.doFrontImageAdded,
         builder: (context, snapshot) {
           if (snapshot.hasData &&
               snapshot.data != null &&
               snapshot.data.isNotEmpty) {
-            return _buildImagesList(snapshot.data);
+            return _buildImagesList(snapshot.data, _bloc.onFrontImageDeleted);
           } else {
             return Container(height: 0, width: 0);
           }
         },
       ))
       ..addAll(backWidgetsInput)
-      ..add(StreamBuilder<List<File>>(
+      ..add(StreamBuilder<List<String>>(
         stream: _bloc.doBackImageAdded,
         builder: (context, snapshot) {
           if (snapshot.hasData &&
               snapshot.data != null &&
               snapshot.data.isNotEmpty) {
-            return _buildImagesList(snapshot.data);
+            return _buildImagesList(snapshot.data, _bloc.onBackImageDeleted);
           } else {
             return Container(height: 0, width: 0);
           }
