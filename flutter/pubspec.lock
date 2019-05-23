@@ -113,13 +113,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.4"
-  firebase_crashlytics:
-    dependency: "direct main"
-    description:
-      name: firebase_crashlytics
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.4+8"
   firebase_database:
     dependency: "direct main"
     description:
@@ -146,6 +139,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_crashlytics:
+    dependency: "direct main"
+    description:
+      name: flutter_crashlytics
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   flutter_driver:
     dependency: "direct dev"
     description: flutter
@@ -530,6 +530,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.5"
+  transparent_image:
+    dependency: "direct main"
+    description:
+      name: transparent_image
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   typed_data:
     dependency: transitive
     description:

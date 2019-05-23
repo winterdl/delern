@@ -10,6 +10,7 @@ import 'package:delern_flutter/views/helpers/save_updates_dialog.dart';
 import 'package:delern_flutter/views/helpers/sign_in_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 // Callback that called when image was selected
 typedef ImageSelected = void Function(File file);
@@ -135,7 +136,7 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
           Icons.add_photo_alternate,
           localizations.of(context).imageFromGalleryLabel)
       ..[_ImageMenuItemSource.photo] = _buildImageMenuItem(
-          Icons.add_a_photo, AppLocalizations.of(context).imageFromPhotoLabel);
+          Icons.add_a_photo, localizations.of(context).imageFromPhotoLabel);
     return imageMenu;
   }
 
@@ -143,8 +144,7 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
       PopupMenuButton<_ImageMenuItemSource>(
         icon: Icon(
           Icons.attachment,
-          semanticLabel:
-              AppLocalizations.of(context).accessibilityAddImageLabel,
+          semanticLabel: localizations.of(context).accessibilityAddImageLabel,
         ),
         onSelected: (source) async {
           final file = await _openImage(source);
@@ -185,8 +185,13 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
         Padding(
             padding: const EdgeInsets.all(16),
             child: Stack(children: <Widget>[
-              Image.network(
-                imageUrl,
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Center(child: const CircularProgressIndicator()),
+              ),
+              FadeInImage.memoryNetwork(
+                placeholder: kTransparentImage,
+                image: imageUrl,
               ),
               Align(
                 alignment: Alignment.topRight,
@@ -233,7 +238,7 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
               },
               style: app_styles.primaryText,
               decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context).frontSideHint),
+                  hintText: localizations.of(context).frontSideHint),
             ),
           ),
           _buildImageMenuButton((file) {

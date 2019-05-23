@@ -20,8 +20,8 @@ class CardCreateUpdateBloc extends ScreenBloc {
   CardModel _cardModel;
   final bool isAddOperation;
   bool _isOperationEnabled = true;
-  final List<String> _frontImagesFileList = [];
-  final List<File> _backImagesFileList = [];
+  final List<String> _frontImagesUrlList = [];
+  final List<String> _backImagesUrlList = [];
   final storageRef = FirebaseStorage.instance.ref().child('cards');
 
   CardCreateUpdateBloc({@required cardModel})
@@ -104,43 +104,64 @@ class CardCreateUpdateBloc extends ScreenBloc {
       notifyPop();
     });
     _onFrontImageAddedController.stream.listen((file) async {
-      // Put file in Storage
+      final url = await _uploadImage(file);
+      if (url != null) {
+        _frontImagesUrlList.add(url);
+        _doFrontImageAddedController.add(_frontImagesUrlList);
+      }
+    });
+    _onBackImageAddedController.stream.listen((file) async {
+      final url = await _uploadImage(file);
+      if (url != null) {
+        _backImagesUrlList.add(url);
+        _doBackImageAddedController.add(_backImagesUrlList);
+      }
+    });
+    _onFrontImageDeletedController.stream.listen((index) async {
+      if (await _deleteImage(_frontImagesUrlList[index])) {
+        _frontImagesUrlList.removeAt(index);
+        _doFrontImageAddedController.add(_frontImagesUrlList);
+      }
+    });
+    _onBackImageDeletedController.stream.listen((index) async {
+      if (await _deleteImage(_backImagesUrlList[index])) {
+        _backImagesUrlList.removeAt(index);
+        _doBackImageAddedController.add(_backImagesUrlList);
+      }
+    });
+  }
+
+  Future<bool> _deleteImage(String url) async {
+    try {
+      await (await FirebaseStorage.instance.getReferenceFromUrl(url)).delete();
+      return true;
+    } catch (e, stackTrace) {
+      error_reporting.report('Delete image from Storage', e, stackTrace);
+      notifyErrorOccurred(e);
+      return false;
+    }
+  }
+
+  Future<dynamic> _uploadImage(File file) async {
+    try {
       final downloadUrl = await storageRef
           .child(_cardModel.deckKey)
           .child(Uuid().v1())
           .putFile(file)
           .onComplete;
-
-      // Get Url of image;
-      final String url = await downloadUrl.ref.getDownloadURL();
-      print('Uploaded url = $url');
-      _frontImagesFileList.add(url);
-      _doFrontImageAddedController.add(_frontImagesFileList);
-    });
-    _onBackImageAddedController.stream.listen((file) {
-      // TODO(ksheremet): Add image to Storage and save link to list
-      _backImagesFileList.add(file);
-      //_doBackImageAddedController.add(_backImagesFileList);
-    });
-    _onFrontImageDeletedController.stream.listen((index) async {
-      await (await FirebaseStorage.instance
-              .getReferenceFromUrl(_frontImagesFileList[index]))
-          .delete();
-      print('Image deleted');
-      _frontImagesFileList.removeAt(index);
-      _doFrontImageAddedController.add(_frontImagesFileList);
-    });
-    _onBackImageDeletedController.stream.listen((index) {
-      _backImagesFileList.removeAt(index);
-      // _doBackImageAddedController.add(_backImagesFileList);
-    });
+      return downloadUrl.ref.getDownloadURL();
+    } catch (e, stackTrace) {
+      error_reporting.report('Upload Image to Storage', e, stackTrace);
+      notifyErrorOccurred(e);
+    }
+    return null;
   }
 
   // TODO(ksheremet): Save image to Storage. If saving was unsuccessful, delete
   // the image.
   Future<void> _saveCard() async {
     logCardCreate(_cardModel.deckKey);
-    _cardModel.frontImagesUri = _frontImagesFileList;
+    _cardModel.frontImagesUri = _frontImagesUrlList;
     final t = Transaction()..save(_cardModel);
     final sCard = ScheduledCardModel(deckKey: _cardModel.deckKey, uid: uid)
       ..key = _cardModel.key;

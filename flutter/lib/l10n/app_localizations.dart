@@ -548,4 +548,22 @@ To see the source code for this app, please visit the [Delern GitHub repo](https
         name: 'deckDeletedUserMessage',
         desc: 'Deck was deleted',
       );
+
+  String get imageFromGalleryLabel => Intl.message(
+        'From Gallery',
+        name: 'imageFromGalleryLabel',
+        desc: 'Upload image from Gallery',
+      );
+
+  String get imageFromPhotoLabel => Intl.message(
+        'Take Photo',
+        name: 'imageFromPhotoLabel',
+        desc: 'Take photo to upload image',
+      );
+
+  String get accessibilityAddImageLabel => Intl.message(
+        'Add Image',
+        name: 'accessibilityAddImageLabel',
+        desc: 'Add Image Accessibility label',
+      );
 }
