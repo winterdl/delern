@@ -20,8 +20,8 @@ class CardCreateUpdateBloc extends ScreenBloc {
   CardModel _cardModel;
   final bool isAddOperation;
   bool _isOperationEnabled = true;
-  final List<String> _frontImagesUrlList = [];
-  final List<String> _backImagesUrlList = [];
+  List<String> _frontImagesUrlList = [];
+  List<String> _backImagesUrlList = [];
   final storageRef = FirebaseStorage.instance.ref().child('cards');
 
   CardCreateUpdateBloc({@required cardModel})
@@ -80,9 +80,16 @@ class CardCreateUpdateBloc extends ScreenBloc {
   Stream<List<String>> get doBackImageAdded =>
       _doBackImageAddedController.stream;
 
+  final _onClearImagesController = StreamController<void>();
+  Sink<void> get onClearImages => _onClearImagesController.sink;
+
   void _initFields() {
     _frontText = _cardModel.front ?? '';
     _backText = _cardModel.back ?? '';
+    _frontImagesUrlList = _cardModel.frontImagesUri ?? [];
+    _backImagesUrlList = _cardModel.backImagesUri ?? [];
+    _doFrontImageAddedController.add(_frontImagesUrlList);
+    _doBackImageAddedController.add(_backImagesUrlList);
   }
 
   void _initListeners() {
@@ -129,6 +136,12 @@ class CardCreateUpdateBloc extends ScreenBloc {
         _doBackImageAddedController.add(_backImagesUrlList);
       }
     });
+    _onClearImagesController.stream.listen((_) {
+      _frontImagesUrlList.clear();
+      _backImagesUrlList.clear();
+      _doFrontImageAddedController.add(_frontImagesUrlList);
+      _doBackImageAddedController.add(_backImagesUrlList);
+    });
   }
 
   Future<bool> _deleteImage(String url) async {
@@ -157,11 +170,11 @@ class CardCreateUpdateBloc extends ScreenBloc {
     return null;
   }
 
-  // TODO(ksheremet): Save image to Storage. If saving was unsuccessful, delete
-  // the image.
   Future<void> _saveCard() async {
     logCardCreate(_cardModel.deckKey);
-    _cardModel.frontImagesUri = _frontImagesUrlList;
+    _cardModel
+      ..frontImagesUri = _frontImagesUrlList
+      ..backImagesUri = _backImagesUrlList;
     final t = Transaction()..save(_cardModel);
     final sCard = ScheduledCardModel(deckKey: _cardModel.deckKey, uid: uid)
       ..key = _cardModel.key;
@@ -172,7 +185,9 @@ class CardCreateUpdateBloc extends ScreenBloc {
       final reverse = CardModel.copyFrom(_cardModel)
         ..key = null
         ..front = _cardModel.back
-        ..back = _cardModel.front;
+        ..back = _cardModel.front
+        ..frontImagesUri = _cardModel.backImagesUri
+        ..backImagesUri = _cardModel.frontImagesUri;
       t.save(reverse);
       final reverseScCard =
           ScheduledCardModel(deckKey: reverse.deckKey, uid: uid)
@@ -252,6 +267,7 @@ class CardCreateUpdateBloc extends ScreenBloc {
     _doBackImageAddedController.close();
     _onFrontImageDeletedController.close();
     _onBackImageDeletedController.close();
+    _onClearImagesController.close();
     super.dispose();
   }
 }

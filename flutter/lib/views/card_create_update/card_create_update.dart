@@ -275,59 +275,52 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
         ],
       ),
     ];
-
-    final widgetsList = <Widget>[]
-      ..addAll(frontWidgetsInput)
-      ..add(StreamBuilder<List<String>>(
-        stream: _bloc.doFrontImageAdded,
-        builder: (context, snapshot) {
-          if (snapshot.hasData &&
-              snapshot.data != null &&
-              snapshot.data.isNotEmpty) {
-            return _buildImagesList(snapshot.data, _bloc.onFrontImageDeleted);
-          } else {
-            return Container(height: 0, width: 0);
-          }
-        },
-      ))
-      ..addAll(backWidgetsInput)
-      ..add(StreamBuilder<List<String>>(
-        stream: _bloc.doBackImageAdded,
-        builder: (context, snapshot) {
-          if (snapshot.hasData &&
-              snapshot.data != null &&
-              snapshot.data.isNotEmpty) {
-            return _buildImagesList(snapshot.data, _bloc.onBackImageDeleted);
-          } else {
-            return Container(height: 0, width: 0);
-          }
-        },
-      ));
-
-    // Add reversed card widget it it is adding cards
-    if (_bloc.isAddOperation) {
-      // https://github.com/flutter/flutter/issues/254 suggests using
-      // CheckboxListTile to have a clickable checkbox label.
-      widgetsList.add(CheckboxListTile(
-        title: Text(
-          localizations.of(context).reversedCardLabel,
-          style: app_styles.secondaryText,
-        ),
-        value: _addReversedCard,
-        onChanged: (newValue) {
-          _bloc.onAddReversedCard.add(newValue);
-          setState(() {
-            _addReversedCard = newValue;
-          });
-        },
-        // Position checkbox before the text.
-        controlAffinity: ListTileControlAffinity.leading,
-      ));
-    }
-
     return ListView(
       padding: const EdgeInsets.only(left: 8, right: 8),
-      children: widgetsList,
+      children: <Widget>[
+        ...frontWidgetsInput,
+        StreamBuilder<List<String>>(
+          stream: _bloc.doFrontImageAdded,
+          builder: (context, snapshot) {
+            if (snapshot.hasData &&
+                snapshot.data != null &&
+                snapshot.data.isNotEmpty) {
+              return _buildImagesList(snapshot.data, _bloc.onFrontImageDeleted);
+            } else {
+              return Container(height: 0, width: 0);
+            }
+          },
+        ),
+        ...backWidgetsInput,
+        StreamBuilder<List<String>>(
+          stream: _bloc.doBackImageAdded,
+          builder: (context, snapshot) {
+            if (snapshot.hasData &&
+                snapshot.data != null &&
+                snapshot.data.isNotEmpty) {
+              return _buildImagesList(snapshot.data, _bloc.onBackImageDeleted);
+            } else {
+              return Container(height: 0, width: 0);
+            }
+          },
+        ),
+        if (_bloc.isAddOperation)
+          CheckboxListTile(
+            title: Text(
+              localizations.of(context).reversedCardLabel,
+              style: app_styles.secondaryText,
+            ),
+            value: _addReversedCard,
+            onChanged: (newValue) {
+              _bloc.onAddReversedCard.add(newValue);
+              setState(() {
+                _addReversedCard = newValue;
+              });
+            },
+            // Position checkbox before the text.
+            controlAffinity: ListTileControlAffinity.leading,
+          )
+      ],
     );
   }
 
@@ -336,6 +329,7 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
       _isChanged = false;
       _frontTextController.clear();
       _backTextController.clear();
+      _bloc.onClearImages.add(null);
       _bloc.onFrontSideText.add('');
       _bloc.onBackSideText.add('');
       FocusScope.of(context).requestFocus(_frontSideFocus);
