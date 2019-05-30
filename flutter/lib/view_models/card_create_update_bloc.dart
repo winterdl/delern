@@ -108,6 +108,10 @@ class CardCreateUpdateBloc extends ScreenBloc {
     });
     _onUidController.stream.listen((uid) => this.uid = uid);
     _onDiscardChangesController.stream.listen((_) {
+      if (isAddOperation) {
+        _frontImagesUrlList.forEach(_deleteImage);
+        _backImagesUrlList.forEach(_deleteImage);
+      }
       notifyPop();
     });
     _onFrontImageAddedController.stream.listen((file) async {
@@ -149,7 +153,8 @@ class CardCreateUpdateBloc extends ScreenBloc {
       await (await FirebaseStorage.instance.getReferenceFromUrl(url)).delete();
       return true;
     } catch (e, stackTrace) {
-      error_reporting.report('Delete image from Storage', e, stackTrace);
+      unawaited(
+          error_reporting.report('Delete image from Storage', e, stackTrace));
       notifyErrorOccurred(e);
       return false;
     }
@@ -164,14 +169,15 @@ class CardCreateUpdateBloc extends ScreenBloc {
           .onComplete;
       return downloadUrl.ref.getDownloadURL();
     } catch (e, stackTrace) {
-      error_reporting.report('Upload Image to Storage', e, stackTrace);
+      unawaited(
+          error_reporting.report('Upload Image to Storage', e, stackTrace));
       notifyErrorOccurred(e);
     }
     return null;
   }
 
   Future<void> _saveCard() async {
-    logCardCreate(_cardModel.deckKey);
+    unawaited(logCardCreate(_cardModel.deckKey));
     _cardModel
       ..frontImagesUri = _frontImagesUrlList
       ..backImagesUri = _backImagesUrlList;
