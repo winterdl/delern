@@ -93,6 +93,8 @@ class CardsLearningState extends State<CardsLearning> {
                     backgroundColor: specifyCardBackground(
                         _viewModel.deck.type, _viewModel.card.back),
                     isMarkdown: _viewModel.deck.markdown,
+                    frontImages: _viewModel.card.frontImagesUri,
+                    backImages: _viewModel.card.backImagesUri,
                   )),
                   Padding(
                     padding: const EdgeInsets.only(top: 25, bottom: 20),

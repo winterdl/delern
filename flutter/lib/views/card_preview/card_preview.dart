@@ -66,13 +66,16 @@ class _CardPreviewState extends State<CardPreview> {
                     stream: _bloc.cardStream,
                     initialData: _bloc.cardValue,
                     builder: (context, snapshot) => CardDisplayWidget(
-                        front: snapshot.requireData.card.front,
-                        back: snapshot.requireData.card.back,
-                        showBack: true,
-                        backgroundColor: specifyCardBackground(
-                            snapshot.requireData.deck.type,
-                            snapshot.requireData.card.back),
-                        isMarkdown: snapshot.requireData.deck.markdown))),
+                          front: snapshot.requireData.card.front,
+                          back: snapshot.requireData.card.back,
+                          showBack: true,
+                          backgroundColor: specifyCardBackground(
+                              snapshot.requireData.deck.type,
+                              snapshot.requireData.card.back),
+                          isMarkdown: snapshot.requireData.deck.markdown,
+                          frontImages: snapshot.requireData.card.frontImagesUri,
+                          backImages: snapshot.requireData.card.backImagesUri,
+                        ))),
             const Padding(padding: EdgeInsets.only(bottom: 100))
           ],
         ),
