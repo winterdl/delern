@@ -10,6 +10,7 @@ import 'package:delern_flutter/view_models/base/screen_bloc.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:meta/meta.dart';
 import 'package:pedantic/pedantic.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
 class CardCreateUpdateBloc extends ScreenBloc {
@@ -72,11 +73,11 @@ class CardCreateUpdateBloc extends ScreenBloc {
   final _onBackImageDeletedController = StreamController<int>();
   Sink<int> get onBackImageDeleted => _onBackImageDeletedController.sink;
 
-  final _doFrontImageAddedController = StreamController<List<String>>();
+  final _doFrontImageAddedController = BehaviorSubject<List<String>>();
   Stream<List<String>> get doFrontImageAdded =>
       _doFrontImageAddedController.stream;
 
-  final _doBackImageAddedController = StreamController<List<String>>();
+  final _doBackImageAddedController = BehaviorSubject<List<String>>();
   Stream<List<String>> get doBackImageAdded =>
       _doBackImageAddedController.stream;
 
@@ -119,6 +120,7 @@ class CardCreateUpdateBloc extends ScreenBloc {
       if (url != null) {
         _frontImagesUrlList.add(url);
         _doFrontImageAddedController.add(_frontImagesUrlList);
+        _checkOperationAvailability();
       }
     });
     _onBackImageAddedController.stream.listen((file) async {
@@ -126,18 +128,21 @@ class CardCreateUpdateBloc extends ScreenBloc {
       if (url != null) {
         _backImagesUrlList.add(url);
         _doBackImageAddedController.add(_backImagesUrlList);
+        _checkOperationAvailability();
       }
     });
     _onFrontImageDeletedController.stream.listen((index) async {
       if (await _deleteImage(_frontImagesUrlList[index])) {
         _frontImagesUrlList.removeAt(index);
         _doFrontImageAddedController.add(_frontImagesUrlList);
+        _checkOperationAvailability();
       }
     });
     _onBackImageDeletedController.stream.listen((index) async {
       if (await _deleteImage(_backImagesUrlList[index])) {
         _backImagesUrlList.removeAt(index);
         _doBackImageAddedController.add(_backImagesUrlList);
+        _checkOperationAvailability();
       }
     });
     _onClearImagesController.stream.listen((_) {
@@ -145,6 +150,7 @@ class CardCreateUpdateBloc extends ScreenBloc {
       _backImagesUrlList.clear();
       _doFrontImageAddedController.add(_frontImagesUrlList);
       _doBackImageAddedController.add(_backImagesUrlList);
+      _checkOperationAvailability();
     });
   }
 
@@ -243,8 +249,9 @@ class CardCreateUpdateBloc extends ScreenBloc {
   }
 
   bool _isCardValid() => _addReversedCard
-      ? _frontText.trim().isNotEmpty && _backText.trim().isNotEmpty
-      : _frontText.trim().isNotEmpty;
+      ? (_frontText.trim().isNotEmpty || _frontImagesUrlList.isNotEmpty) &&
+          (_backText.trim().isNotEmpty || _backImagesUrlList.isNotEmpty)
+      : _frontText.trim().isNotEmpty || _frontImagesUrlList.isNotEmpty;
 
   void _checkOperationAvailability() {
     _isOperationEnabledController.add(_isOperationEnabled && _isCardValid());

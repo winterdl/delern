@@ -23,6 +23,7 @@ dependencies:
       ref: list-observed-unobserved
   image_picker: ^0.5.0
   transparent_image: ^1.0.0
+  rxdart: ^0.22.0
 
   firebase_auth: ^0.8.2
   firebase_analytics: ^2.0.3
@@ -32,6 +33,7 @@ dependencies:
   flutter_crashlytics: ^1.0.0
   firebase_storage: ^2.1.0+1
   uuid: ^2.0.1
+
 
   flutter:
     sdk: flutter

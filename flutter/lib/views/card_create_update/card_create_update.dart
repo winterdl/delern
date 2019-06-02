@@ -140,8 +140,9 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
     return imageMenu;
   }
 
-  Widget _buildImageMenuButton(ImageSelected fn) =>
+  Widget _buildImageMenuButton(ImageSelected fn, String key) =>
       PopupMenuButton<_ImageMenuItemSource>(
+        key: Key(key),
         icon: Icon(
           Icons.attachment,
           semanticLabel: localizations.of(context).accessibilityAddImageLabel,
@@ -177,45 +178,6 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
     return image;
   }
 
-  Widget _buildImagesList(List<String> images, Sink<int> onDelete) {
-    final widgetsList = <Widget>[];
-    for (var i = 0; i < images.length; i++) {
-      final imageUrl = images[i];
-      widgetsList.add(
-        Padding(
-            padding: const EdgeInsets.all(16),
-            child: Stack(children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: Center(child: const CircularProgressIndicator()),
-              ),
-              FadeInImage.memoryNetwork(
-                placeholder: kTransparentImage,
-                image: imageUrl,
-              ),
-              Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 8, top: 8),
-                  child: DecoratedBox(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          onDelete.add(i);
-                        }),
-                  ),
-                ),
-              ),
-            ])),
-      );
-    }
-    return Column(children: widgetsList);
-  }
-
   // TODO(ksheremet): Refactor
   Widget _buildUserInput() {
     final frontWidgetsInput = <Widget>[
@@ -243,7 +205,8 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
           ),
           _buildImageMenuButton((file) {
             _bloc.onFrontImageAdded.add(file);
-          }),
+            _isChanged = true;
+          }, 'frontCardImages'),
         ],
       ),
     ];
@@ -271,7 +234,7 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
           ),
           _buildImageMenuButton((file) {
             _bloc.onBackImageAdded.add(file);
-          }),
+          }, 'backCardImages'),
         ],
       ),
     ];
@@ -279,29 +242,19 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
       padding: const EdgeInsets.only(left: 8, right: 8),
       children: <Widget>[
         ...frontWidgetsInput,
-        StreamBuilder<List<String>>(
-          stream: _bloc.doFrontImageAdded,
-          builder: (context, snapshot) {
-            if (snapshot.hasData &&
-                snapshot.data != null &&
-                snapshot.data.isNotEmpty) {
-              return _buildImagesList(snapshot.data, _bloc.onFrontImageDeleted);
-            } else {
-              return Container(height: 0, width: 0);
-            }
+        _UpdateImageListWidget(
+          addImageStream: _bloc.doFrontImageAdded,
+          deleteImageSink: _bloc.onFrontImageDeleted,
+          callback: () {
+            _isChanged = true;
           },
         ),
         ...backWidgetsInput,
-        StreamBuilder<List<String>>(
-          stream: _bloc.doBackImageAdded,
-          builder: (context, snapshot) {
-            if (snapshot.hasData &&
-                snapshot.data != null &&
-                snapshot.data.isNotEmpty) {
-              return _buildImagesList(snapshot.data, _bloc.onBackImageDeleted);
-            } else {
-              return Container(height: 0, width: 0);
-            }
+        _UpdateImageListWidget(
+          addImageStream: _bloc.doBackImageAdded,
+          deleteImageSink: _bloc.onBackImageDeleted,
+          callback: () {
+            _isChanged = true;
           },
         ),
         if (_bloc.isAddOperation)
@@ -338,3 +291,69 @@ class _CardCreateUpdateState extends State<CardCreateUpdate> {
 }
 
 enum _ImageMenuItemSource { gallery, photo }
+
+class _UpdateImageListWidget extends StatelessWidget {
+  final Stream<List<String>> _addImageStream;
+  final Sink<int> _deleteImageSink;
+  final Function _callback;
+
+  const _UpdateImageListWidget(
+      {@required addImageStream, @required deleteImageSink, @required callback})
+      : _addImageStream = addImageStream,
+        _deleteImageSink = deleteImageSink,
+        _callback = callback;
+
+  @override
+  Widget build(BuildContext context) => StreamBuilder<List<String>>(
+        stream: _addImageStream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData &&
+              snapshot.data != null &&
+              snapshot.data.isNotEmpty) {
+            return _buildImagesList(snapshot.data, _deleteImageSink);
+          } else {
+            return Container(height: 0, width: 0);
+          }
+        },
+      );
+
+  Widget _buildImagesList(List<String> images, Sink<int> onDelete) {
+    final widgetsList = <Widget>[];
+    for (var i = 0; i < images.length; i++) {
+      final imageUrl = images[i];
+      widgetsList.add(
+        Padding(
+            padding: const EdgeInsets.all(16),
+            child: Stack(children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Center(child: const CircularProgressIndicator()),
+              ),
+              FadeInImage.memoryNetwork(
+                placeholder: kTransparentImage,
+                image: imageUrl,
+              ),
+              Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8, top: 8),
+                  child: DecoratedBox(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          onDelete.add(i);
+                          _callback();
+                        }),
+                  ),
+                ),
+              ),
+            ])),
+      );
+    }
+    return Column(children: widgetsList);
+  }
+}
