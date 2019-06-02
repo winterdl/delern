@@ -7,6 +7,7 @@ import 'package:delern_flutter/models/deck_model.dart';
 import 'package:delern_flutter/models/scheduled_card_model.dart';
 import 'package:delern_flutter/remote/error_reporting.dart' as error_reporting;
 import 'package:delern_flutter/view_models/base/screen_bloc.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:meta/meta.dart';
 import 'package:pedantic/pedantic.dart';
 
@@ -96,11 +97,38 @@ class CardPreviewBloc extends ScreenBloc {
         }
       }));
 
-  Future<void> _deleteCard(String uid) => (Transaction()
-        ..delete(_cardValue.card)
-        ..delete(ScheduledCardModel(deckKey: _cardValue.deck.key, uid: uid)
-          ..key = _cardValue.card.key))
-      .commit();
+  // TODO(ksheremet): What happens if card is deleted and images not
+  Future<void> _deleteCard(String uid) async {
+    final images = <String>[];
+    if (_cardValue.card.frontImagesUri != null &&
+        _cardValue.card.frontImagesUri.isNotEmpty) {
+      images.addAll(_cardValue.card.frontImagesUri);
+    }
+    if (_cardValue.card.backImagesUri != null &&
+        _cardValue.card.backImagesUri.isNotEmpty) {
+      images.addAll(_cardValue.card.backImagesUri);
+    }
+    await (Transaction()
+          ..delete(_cardValue.card)
+          ..delete(ScheduledCardModel(deckKey: _cardValue.deck.key, uid: uid)
+            ..key = _cardValue.card.key))
+        .commit();
+
+    images.forEach((url) async => _deleteImage(url));
+  }
+
+  // TODO(ksheremet): Consider better solution because code is repeated
+  Future<bool> _deleteImage(String url) async {
+    try {
+      await (await FirebaseStorage.instance.getReferenceFromUrl(url)).delete();
+      return true;
+    } catch (e, stackTrace) {
+      unawaited(
+          error_reporting.report('Delete image from Storage', e, stackTrace));
+      notifyErrorOccurred(e);
+      return false;
+    }
+  }
 
   bool _isEditAllowed() => cardValue.deck.access != AccessType.read;
 
