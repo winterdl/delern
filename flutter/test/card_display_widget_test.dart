@@ -18,6 +18,9 @@ void main() {
         backgroundColor: app_styles.cardBackgroundColors[Gender.feminine],
         isMarkdown: false,
         showBack: true,
+        // TODO(ksheremet): Create golden test for image testing
+        frontImages: null,
+        backImages: null,
       ),
     ));
 
