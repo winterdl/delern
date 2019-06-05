@@ -6,7 +6,10 @@ import 'package:delern_flutter/models/card_model.dart';
 import 'package:delern_flutter/models/deck_model.dart';
 import 'package:delern_flutter/models/scheduled_card_model.dart';
 import 'package:delern_flutter/remote/analytics.dart';
+import 'package:delern_flutter/remote/error_reporting.dart' as error_reporting;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:meta/meta.dart';
+import 'package:pedantic/pedantic.dart';
 
 enum LearningUpdateType {
   deckUpdate,
@@ -50,6 +53,32 @@ class LearningViewModel {
     return (Transaction()..save(_scheduledCard)..save(cv)).commit();
   }
 
-  Future<void> deleteCard() =>
-      (Transaction()..delete(card)..delete(_scheduledCard)).commit();
+  // TODO(dotdoom): Code is repeated in card preview. Consider better
+  // solution. Code is repeated in card preview
+  Future<void> deleteCard() {
+    final images = <String>[];
+    if (card.frontImagesUri != null && card.frontImagesUri.isNotEmpty) {
+      images.addAll(card.frontImagesUri);
+    }
+    if (card.backImagesUri != null && card.backImagesUri.isNotEmpty) {
+      images.addAll(card.backImagesUri);
+    }
+    images.forEach((url) async => _deleteImage(url));
+
+    return (Transaction()..delete(card)..delete(_scheduledCard)).commit();
+  }
+
+  // TODO(ksheremet): Consider better solution because code is repeated in card
+  // preview.
+  Future<bool> _deleteImage(String url) async {
+    try {
+      await (await FirebaseStorage.instance.getReferenceFromUrl(url)).delete();
+      return true;
+    } catch (e, stackTrace) {
+      unawaited(
+          error_reporting.report('Delete image from Storage', e, stackTrace));
+      // TODO(ksheremet): Notify user that error occured when deleting card
+      return false;
+    }
+  }
 }
