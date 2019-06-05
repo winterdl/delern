@@ -21,8 +21,8 @@ class CardCreateUpdateBloc extends ScreenBloc {
   CardModel _cardModel;
   final bool isAddOperation;
   bool _isOperationEnabled = true;
-  List<String> _frontImagesUrlList = [];
-  List<String> _backImagesUrlList = [];
+  List<String> _frontImagesUri = [];
+  List<String> _backImagesUri = [];
   final storageRef = FirebaseStorage.instance.ref().child('cards');
 
   CardCreateUpdateBloc({@required cardModel})
@@ -87,10 +87,10 @@ class CardCreateUpdateBloc extends ScreenBloc {
   void _initFields() {
     _frontText = _cardModel.front ?? '';
     _backText = _cardModel.back ?? '';
-    _frontImagesUrlList = _cardModel.frontImagesUri ?? [];
-    _backImagesUrlList = _cardModel.backImagesUri ?? [];
-    _doFrontImageAddedController.add(_frontImagesUrlList);
-    _doBackImageAddedController.add(_backImagesUrlList);
+    _frontImagesUri = _cardModel.frontImagesUri ?? [];
+    _backImagesUri = _cardModel.backImagesUri ?? [];
+    _doFrontImageAddedController.add(_frontImagesUri);
+    _doBackImageAddedController.add(_backImagesUri);
   }
 
   void _initListeners() {
@@ -110,46 +110,46 @@ class CardCreateUpdateBloc extends ScreenBloc {
     _onUidController.stream.listen((uid) => this.uid = uid);
     _onDiscardChangesController.stream.listen((_) {
       if (isAddOperation) {
-        _frontImagesUrlList.forEach(_deleteImage);
-        _backImagesUrlList.forEach(_deleteImage);
+        _frontImagesUri.forEach(_deleteImage);
+        _backImagesUri.forEach(_deleteImage);
       }
       notifyPop();
     });
     _onFrontImageAddedController.stream.listen((file) async {
       final url = await _uploadImage(file);
       if (url != null) {
-        _frontImagesUrlList.add(url);
-        _doFrontImageAddedController.add(_frontImagesUrlList);
+        _frontImagesUri.add(url);
+        _doFrontImageAddedController.add(_frontImagesUri);
         _checkOperationAvailability();
       }
     });
     _onBackImageAddedController.stream.listen((file) async {
       final url = await _uploadImage(file);
       if (url != null) {
-        _backImagesUrlList.add(url);
-        _doBackImageAddedController.add(_backImagesUrlList);
+        _backImagesUri.add(url);
+        _doBackImageAddedController.add(_backImagesUri);
         _checkOperationAvailability();
       }
     });
     _onFrontImageDeletedController.stream.listen((index) async {
-      if (await _deleteImage(_frontImagesUrlList[index])) {
-        _frontImagesUrlList.removeAt(index);
-        _doFrontImageAddedController.add(_frontImagesUrlList);
+      if (await _deleteImage(_frontImagesUri[index])) {
+        _frontImagesUri.removeAt(index);
+        _doFrontImageAddedController.add(_frontImagesUri);
         _checkOperationAvailability();
       }
     });
     _onBackImageDeletedController.stream.listen((index) async {
-      if (await _deleteImage(_backImagesUrlList[index])) {
-        _backImagesUrlList.removeAt(index);
-        _doBackImageAddedController.add(_backImagesUrlList);
+      if (await _deleteImage(_backImagesUri[index])) {
+        _backImagesUri.removeAt(index);
+        _doBackImageAddedController.add(_backImagesUri);
         _checkOperationAvailability();
       }
     });
     _onClearImagesController.stream.listen((_) {
-      _frontImagesUrlList.clear();
-      _backImagesUrlList.clear();
-      _doFrontImageAddedController.add(_frontImagesUrlList);
-      _doBackImageAddedController.add(_backImagesUrlList);
+      _frontImagesUri.clear();
+      _backImagesUri.clear();
+      _doFrontImageAddedController.add(_frontImagesUri);
+      _doBackImageAddedController.add(_backImagesUri);
       _checkOperationAvailability();
     });
   }
@@ -185,8 +185,8 @@ class CardCreateUpdateBloc extends ScreenBloc {
   Future<void> _saveCard() async {
     unawaited(logCardCreate(_cardModel.deckKey));
     _cardModel
-      ..frontImagesUri = _frontImagesUrlList
-      ..backImagesUri = _backImagesUrlList;
+      ..frontImagesUri = _frontImagesUri
+      ..backImagesUri = _backImagesUri;
     final t = Transaction()..save(_cardModel);
     final sCard = ScheduledCardModel(deckKey: _cardModel.deckKey, uid: uid)
       ..key = _cardModel.key;
@@ -249,9 +249,9 @@ class CardCreateUpdateBloc extends ScreenBloc {
   }
 
   bool _isCardValid() => _addReversedCard
-      ? (_frontText.trim().isNotEmpty || _frontImagesUrlList.isNotEmpty) &&
-          (_backText.trim().isNotEmpty || _backImagesUrlList.isNotEmpty)
-      : _frontText.trim().isNotEmpty || _frontImagesUrlList.isNotEmpty;
+      ? (_frontText.trim().isNotEmpty || _frontImagesUri.isNotEmpty) &&
+          (_backText.trim().isNotEmpty || _backImagesUri.isNotEmpty)
+      : _frontText.trim().isNotEmpty || _frontImagesUri.isNotEmpty;
 
   void _checkOperationAvailability() {
     _isOperationEnabledController.add(_isOperationEnabled && _isCardValid());
