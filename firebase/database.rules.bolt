@@ -149,6 +149,8 @@ type Card {
   back: String,
   // TODO(dotdoom): CreatedAtTimestamp when Flutter app is released.
   createdAt: Number | Null,
+  frontImagesUri: String[] | Null,
+  backImagesUri: String[] | Null,
 }
 
 path /cards/{deckId} {
