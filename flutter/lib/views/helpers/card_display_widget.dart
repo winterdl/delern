@@ -62,9 +62,19 @@ class CardDisplayWidget extends StatelessWidget {
       child: Column(
         children: <Widget>[
           for (String imageUrl in images)
-            FadeInImage.memoryNetwork(
-              placeholder: kTransparentImage,
-              image: imageUrl,
+            Stack(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Center(
+                    child: const CircularProgressIndicator(),
+                  ),
+                ),
+                FadeInImage.memoryNetwork(
+                  placeholder: kTransparentImage,
+                  image: imageUrl,
+                )
+              ],
             )
         ],
       ),
