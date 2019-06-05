@@ -120,6 +120,7 @@ class CardCreateUpdateBloc extends ScreenBloc {
       if (url != null) {
         _frontImagesUri.add(url);
         _doFrontImageAddedController.add(_frontImagesUri);
+        unawaited(logAddFrontImage());
         _checkOperationAvailability();
       }
     });
@@ -128,6 +129,7 @@ class CardCreateUpdateBloc extends ScreenBloc {
       if (url != null) {
         _backImagesUri.add(url);
         _doBackImageAddedController.add(_backImagesUri);
+        unawaited(logAddBackImage());
         _checkOperationAvailability();
       }
     });

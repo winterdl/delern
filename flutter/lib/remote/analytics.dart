@@ -28,3 +28,9 @@ Future<void> logPromoteAnonymous() =>
 
 Future<void> logPromoteAnonymousFail() =>
     FirebaseAnalytics().logEvent(name: 'promote_anonymous_fail');
+
+Future<void> logAddFrontImage() =>
+    FirebaseAnalytics().logEvent(name: 'add_front_image');
+
+Future<void> logAddBackImage() =>
+    FirebaseAnalytics().logEvent(name: 'add_back_image');
